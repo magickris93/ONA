@@ -35,6 +35,18 @@ class Landscape:
     def diamond_step(self, coords):
         pass
 
+    def get_level(self, level):
+        """
+        Creates list of squares on specified depth
+        :param level: Level of depth | 0 <= level <= self.rank
+        :return: List of upper-left corners of all squares on specified level
+        """
+        res = []
+        for i in range(0, self.size-1, 2**level):
+            for j in range(0, self.size-1, 2**level):
+                res.append((i, j))
+        return res
+
     def get_square(self, upper_left, distance):
         """
         Creates a square vertices coordinates based on initial point(
@@ -42,27 +54,27 @@ class Landscape:
         of a side.
         :param upper_left: Coordinates of upper-left corner of square
         :param distance: Length of square's edge
-        :return: List of vertices of square in order : upper left, upper right,
+        :return: Tuple of vertices of square in order : upper left, upper right,
         lower right, lower left
         """
-        return [upper_left,
+        return (upper_left,
                 (upper_left[0], upper_left[1] + distance),
                 (upper_left[0] + distance, upper_left[1] + distance),
-                (upper_left[0] + distance, upper_left[1])]
+                (upper_left[0] + distance, upper_left[1]))
 
     def neighbours(self, point, distance):
         """
-        Creates list of coordinates of four neighbours of point in specified
+        Creates tuple of coordinates of four neighbours of point in specified
         distance
         :param point: Coordinates of center point
         :param distance: Distance from point
-        :return: List of vertices of point's neighbours in order : up, right,
+        :return: Tuple of vertices of point's neighbours in order : up, right,
         down, left
         """
-        return [((point[0] - distance) % (self.size - 1), point[1]),
+        return (((point[0] - distance) % (self.size - 1), point[1]),
                 (point[0], (point[1] + distance) % (self.size - 1)),
                 ((point[0] + distance) % (self.size - 1), point[1]),
-                (point[0], (point[1] - distance) % (self.size - 1))]
+                (point[0], (point[1] - distance) % (self.size - 1)))
 
     def elevate(self):
         pass
@@ -72,5 +84,5 @@ class Landscape:
 
 
 t0 = time.time()
-land = Landscape(n=5)
+land = Landscape(n=8)
 print('Execution time:', time.time() - t0)
