@@ -1,5 +1,6 @@
 import time
 import numpy as np
+import random as r
 
 
 class Landscape:
@@ -13,6 +14,11 @@ class Landscape:
         self.plot_file = plotfile
         if matrix is None:
             self.map = np.zeros((self.size, self.size))
+            self.map[0][0] = self.size * r.uniform(0.5, 1.5)
+            self.map[0][self.size - 1] = self.size * r.uniform(0.5, 1.5)
+            self.map[self.size - 1][0] = self.size * r.uniform(0.5, 1.5)
+            self.map[self.size - 1][self.size - 1] = self.size * \
+                                                        r.uniform(0.5, 1.5)
         else:
             self.map = matrix
 
@@ -102,8 +108,16 @@ class Landscape:
         self.set_value(up, v_up)
         self.set_value(lt, v_lt)
 
-    def elevate(self):
-        for k in range(self.rank, 0, -1):
+    def diamond_square(self, level=None):
+        """
+        Performs diamond square algorithm on the map - fills matrix with
+        values corresponding to landscape heights.
+        """
+        if level is None:
+            start = self.rank
+        else:
+            start = level
+        for k in range(start, 0, -1):
             squares = self.get_level(k)
             for square in squares:
                 self.diamond_step(self.get_square(square, 2 ** k), k)
@@ -114,19 +128,18 @@ class Landscape:
             self.map[i][self.size - 1] = self.map[i][0]
         self.map[self.size - 1][self.size - 1] = self.map[0][0]
 
+    def generate_heatmap(self):
+        pass
 
-def generate_heatmap(self):
-    pass
+    def generate_plot(self):
+        pass
 
+    def print_map(self):
+        print(self.map)
 
-def generate_plot(self):
-    pass
-
-
-def print_map(self):
-    print(self.map)
 
 land = Landscape(n=8)
 t0 = time.time()
-land.elevate()
+land.diamond_square()
 print('Execution time:', time.time() - t0)
+land.print_map()
