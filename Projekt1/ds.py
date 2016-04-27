@@ -23,7 +23,8 @@ class Landscape:
         self.map[coords[0]][coords[1]] = value
 
     def get_avg(self, coords):
-        return np.mean([self.get_value(v) for v in coords])
+        x = [self.get_value(v) for v in coords]
+        return sum(x) / len(x)
 
     def get_level(self, level):
         """
@@ -69,33 +70,63 @@ class Landscape:
     def diamond_step(self, coords, level):
         """
         Performs diamond step on specified square
-        :param coords: Square vertices coordinates in order : upper left,
+        :param coords: Square vertices coordinates in order: upper left,
         upper right, lower right, lower left
         :param level: Depth of square
         """
-        mid = (np.mean([coords[0][0], coords[2][0]]),
-               np.mean([coords[0][1], coords[2][1]]))
+        mid = ((coords[0][0] + coords[2][0]) / 2,
+               (coords[0][1] + coords[2][1]) / 2)
 
         v = self.get_avg(coords) + 2 ** level * self.sigma * np.random.normal()
 
         self.set_value(mid, v)
 
-    def square_step(self, coords):
-        pass
+    def square_step(self, coords, level):
+        """
+        Performs upper half of square step on specified square
+        :param coords: Square vertices coordinates in order: upper left,
+        upper right, lower right, lower left
+        :param level: Depth of Square
+        """
+        up = (coords[0][0], (coords[0][1] + coords[1][1]) / 2)
+        lt = ((coords[0][0] + coords[3][0]) / 2, coords[0][1])
+
+        dist = up[1] - up[0]
+
+        v_up = self.get_avg(self.neighbours(up, dist)) + \
+               2 ** (level - 1) * self.sigma * np.random.normal()
+
+        v_lt = self.get_avg(self.neighbours(lt, dist)) + \
+               2 ** (level - 1) * self.sigma * np.random.normal()
+
+        self.set_value(up, v_up)
+        self.set_value(lt, v_lt)
 
     def elevate(self):
-        pass
+        for k in range(self.rank, 0, -1):
+            squares = self.get_level(k)
+            for square in squares:
+                self.diamond_step(self.get_square(square, 2 ** k), k)
+            for square in squares:
+                self.square_step(self.get_square(square, 2 ** k), k)
+        for i in range(self.size - 1):
+            self.map[self.size - 1][i] = self.map[0][i]
+            self.map[i][self.size - 1] = self.map[i][0]
+        self.map[self.size - 1][self.size - 1] = self.map[0][0]
 
-    def generate_heatmap(self):
-        pass
 
-    def generate_plot(self):
-        pass
-
-    def print_map(self):
-        print(self.map)
+def generate_heatmap(self):
+    pass
 
 
+def generate_plot(self):
+    pass
+
+
+def print_map(self):
+    print(self.map)
+
+land = Landscape(n=8)
 t0 = time.time()
-land = Landscape(n=2)
+land.elevate()
 print('Execution time:', time.time() - t0)
