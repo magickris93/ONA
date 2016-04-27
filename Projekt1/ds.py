@@ -1,6 +1,6 @@
-import numpy as np
-import random as rand
 import time
+
+import numpy as np
 
 
 class Landscape:
@@ -35,8 +35,30 @@ class Landscape:
     def diamond_step(self, coords):
         pass
 
+    def get_square(self, upper_left, distance):
+        """
+        Creates a square vertices coordinates based on initial point(
+        upper-left corner) and length
+        of a side.
+        :param upper_left: Coordinates of upper-left corner of square
+        :param distance: Length of square's edge
+        :return: List of vertices of square in order : upper left, upper right,
+        lower right, lower left
+        """
+        return [upper_left,
+                (upper_left[0], upper_left[1] + distance),
+                (upper_left[0] + distance, upper_left[1] + distance),
+                (upper_left[0] + distance, upper_left[1])]
+
     def neighbours(self, point, distance):
-        #up, right, down, left
+        """
+        Creates list of coordinates of four neighbours of point in specified
+        distance
+        :param point: Coordinates of center point
+        :param distance: Distance from point
+        :return: List of vertices of point's neighbours in order : up, right,
+        down, left
+        """
         return [((point[0] - distance) % (self.size - 1), point[1]),
                 (point[0], (point[1] + distance) % (self.size - 1)),
                 ((point[0] + distance) % (self.size - 1), point[1]),
@@ -51,4 +73,4 @@ class Landscape:
 
 t0 = time.time()
 land = Landscape(n=5)
-print('Execution time:', time.time()-t0)
+print('Execution time:', time.time() - t0)
