@@ -1,5 +1,4 @@
 import time
-
 import numpy as np
 
 
@@ -23,31 +22,8 @@ class Landscape:
     def set_value(self, coords, value):
         self.map[coords[0]][coords[1]] = value
 
-    def generate_heatmap(self):
-        pass
-
-    def generate_plot(self):
-        pass
-
-    def square_step(self, coords):
-        pass
-
     def get_avg(self, coords):
         return np.mean([self.get_value(v) for v in coords])
-
-    def diamond_step(self, coords, level):
-        """
-        Performs diamond step on specified square
-        :param coords: Square vertices coordinates in order : upper left,
-        upper right, lower right, lower left
-        :param level: Depth of square
-        """
-        mid = (np.mean([coords[0][0], coords[2][0]]),
-               np.mean([coords[0][1], coords[2][1]]))
-
-        v = self.get_avg(coords) + 2 ** level * self.sigma * np.random.normal()
-
-        self.set_value(mid, v)
 
     def get_level(self, level):
         """
@@ -90,7 +66,30 @@ class Landscape:
                 ((point[0] + distance) % (self.size - 1), point[1]),
                 (point[0], (point[1] - distance) % (self.size - 1))]
 
+    def diamond_step(self, coords, level):
+        """
+        Performs diamond step on specified square
+        :param coords: Square vertices coordinates in order : upper left,
+        upper right, lower right, lower left
+        :param level: Depth of square
+        """
+        mid = (np.mean([coords[0][0], coords[2][0]]),
+               np.mean([coords[0][1], coords[2][1]]))
+
+        v = self.get_avg(coords) + 2 ** level * self.sigma * np.random.normal()
+
+        self.set_value(mid, v)
+
+    def square_step(self, coords):
+        pass
+
     def elevate(self):
+        pass
+
+    def generate_heatmap(self):
+        pass
+
+    def generate_plot(self):
         pass
 
     def print_map(self):
