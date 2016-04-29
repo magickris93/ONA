@@ -1,6 +1,6 @@
 import time
 import numpy as np
-import random as r
+import random as rand
 
 
 class Landscape:
@@ -14,22 +14,37 @@ class Landscape:
         self.plot_file = plotfile
         if matrix is None:
             self.map = np.zeros((self.size, self.size))
-            self.map[0][0] = self.size * r.uniform(0.5, 1.5)
-            self.map[0][self.size - 1] = self.size * r.uniform(0.5, 1.5)
-            self.map[self.size - 1][0] = self.size * r.uniform(0.5, 1.5)
+            self.map[0][0] = self.size * rand.uniform(0.5, 1.5)
+            self.map[0][self.size - 1] = self.size * rand.uniform(0.5, 1.5)
+            self.map[self.size - 1][0] = self.size * rand.uniform(0.5, 1.5)
             self.map[self.size - 1][self.size - 1] = self.size * \
-                                                        r.uniform(0.5, 1.5)
+                                                     rand.uniform(0.5, 1.5)
         else:
             self.map = matrix
 
-    def get_value(self, coords):
-        return self.map[coords[0]][coords[1]]
+    def get_value(self, point):
+        """
+        Returns value from matrix at given coordinates
+        :param point: Tuple representing point coordinates
+        :return: Value of matrix at given point
+        """
+        return self.map[point[0]][point[1]]
 
-    def set_value(self, coords, value):
-        self.map[coords[0]][coords[1]] = value
+    def set_value(self, point, value):
+        """
+        Changes the value at given coordinates
+        :param point: Tuple representing point coordinates
+        :param value: New value
+        """
+        self.map[point[0]][point[1]] = value
 
-    def get_avg(self, coords):
-        x = [self.get_value(v) for v in coords]
+    def get_avg(self, points):
+        """
+        Returns an average of values of points in list
+        :param points: List of tuples representing point coordinates
+        :return: Average of point values
+        """
+        x = [self.get_value(vertex) for vertex in points]
         return sum(x) / len(x)
 
     def get_level(self, level):
@@ -142,4 +157,3 @@ land = Landscape(n=8)
 t0 = time.time()
 land.diamond_square()
 print('Execution time:', time.time() - t0)
-land.print_map()
