@@ -1,6 +1,6 @@
-import time
 import numpy as np
 import random as rand
+import time
 
 
 class Landscape:
@@ -14,11 +14,11 @@ class Landscape:
         self.plot_file = plotfile
         if matrix is None:
             self.map = np.zeros((self.size, self.size))
-            self.map[0][0] = self.size * rand.uniform(0.5, 1.5)
-            self.map[0][self.size - 1] = self.size * rand.uniform(0.5, 1.5)
-            self.map[self.size - 1][0] = self.size * rand.uniform(0.5, 1.5)
-            self.map[self.size - 1][self.size - 1] = self.size * \
-                                                     rand.uniform(0.5, 1.5)
+            initial_corner_value = self.size * rand.uniform(0.5, 1.5)
+            self.map[0][0] = initial_corner_value
+            self.map[0][self.size - 1] = initial_corner_value
+            self.map[self.size - 1][0] = initial_corner_value
+            self.map[self.size - 1][self.size - 1] = initial_corner_value
         else:
             self.map = matrix
 
@@ -114,14 +114,14 @@ class Landscape:
 
         dist = up[1] - up[0]
 
-        v_up = self.get_avg(self.neighbours(up, dist)) + \
-               2 ** (level - 1) * self.sigma * np.random.normal()
+        value_up = self.get_avg(self.neighbours(up, dist)) + \
+                   2 ** (level - 1) * self.sigma * np.random.normal()
 
-        v_lt = self.get_avg(self.neighbours(lt, dist)) + \
-               2 ** (level - 1) * self.sigma * np.random.normal()
+        value_left = self.get_avg(self.neighbours(lt, dist)) + \
+                     2 ** (level - 1) * self.sigma * np.random.normal()
 
-        self.set_value(up, v_up)
-        self.set_value(lt, v_lt)
+        self.set_value(up, value_up)
+        self.set_value(lt, value_left)
 
     def diamond_square(self, level=None):
         """
@@ -157,3 +157,4 @@ land = Landscape(n=8)
 t0 = time.time()
 land.diamond_square()
 print('Execution time:', time.time() - t0)
+land.print_map()
