@@ -224,9 +224,6 @@ class Landscape:
     def generate_heatmap(self):
         """
         Generates heatmap plot for created landscape based on values in matrix
-        :param show: If true shows a plot, otherwise saves to file
-        :param output_file: Output file name
-        :return: True if there is a plot to show, False otherwise
         """
         fig = plt.figure()
         ax = fig.add_subplot(111)
@@ -238,9 +235,6 @@ class Landscape:
     def generate_plot(self):
         """
         Generates 3d surface plot of created landscape based on values in matrix
-        :param show: If true shows a plot, otherwise saves to file
-        :param output_file: Output file name
-        :return: True if there is a plot to show, False otherwise
         """
         length = self.map.shape[0]
         width = self.map.shape[1]
