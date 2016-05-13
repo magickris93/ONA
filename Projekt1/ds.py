@@ -198,9 +198,9 @@ class Landscape:
         dist = up[1] - coords[0][1]
 
         value_up = self.get_avg(self.neighbours(up, dist)) + \
-                   2 ** (level - 1) * self.sigma * np.random.normal()
+                   (2 ** level - 1) * self.sigma * np.random.normal()
         value_left = self.get_avg(self.neighbours(left, dist)) + \
-                     2 ** (level - 1) * self.sigma * np.random.normal()
+                     (2 ** level - 1) * self.sigma * np.random.normal()
 
         self.set_value(up, value_up)
         self.set_value(left, value_left)
@@ -227,7 +227,8 @@ class Landscape:
         """
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        ax.imshow(self.map, cmap=self.color_file)
+        im = ax.imshow(self.map, cmap=self.color_file)
+        plt.colorbar(im)
         if self.heatmap_file is not None:
             plt.savefig(self.heatmap_file, format=self.heatmap_format)
             plt.close()
