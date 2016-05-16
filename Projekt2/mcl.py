@@ -63,7 +63,7 @@ class MarkovClusterer(object):
     def mcl(self):
         i = 0
         norms = []
-        current = self.matrix
+        current = MarkovClusterer.normalize_matrix_columns(self.matrix)
         while i < self.depth and (i == 0 or (norms[-1] > self.eps)):
             tmp = self.square_matrix(current)
             succ = self.inflate_matrix(tmp)
