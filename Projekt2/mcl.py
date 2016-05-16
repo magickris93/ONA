@@ -14,8 +14,10 @@ class MarkovClusterer(object):
         self.exponent = exponent
         self.depth = depth
         if self.format == 'txt':
+            # text
             self.matrix = np.loadtxt(input_file)
         elif self.format == 'bin':
+            # binary
             self.matrix = np.load(input_file)
         elif self.format == 'mat':
             self.matrix = sio.loadmat(input_file)
@@ -62,16 +64,19 @@ class MarkovClusterer(object):
 
     def mcl(self):
         i = 0
-        norms = []
         current = self.matrix
-        while i < self.depth and (i == 0 or (norms[-1] > self.eps)):
-            tmp = self.square_matrix(current)
-            succ = self.inflate_matrix(tmp)
-            norms.append(np.linalg.norm(succ - current))
+        succ = self.square_matrix(current)
+        next_succ = self.inflate_matrix(succ)
+        norms = [np.linalg.norm(next_succ - current)]
+        while i < self.depth and norms[-1] > self.eps:
             current = succ
+            succ = next_succ
+            next_succ = self.inflate_matrix(succ)
+            norms.append(np.linalg.norm(next_succ - current))
             i += 1
         return current, norms
-
+# TODO fix loading and saving matrix(sparse), probably csr is the best method
+# TODO to represent them [Efficient powering and multiplication]
 
 if __name__ == '__main__':
     clust = MarkovClusterer.get_clusterer_from_args()
