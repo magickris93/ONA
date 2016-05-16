@@ -1,9 +1,10 @@
 #!/usr/bin/python
 
+import argparse as ap
+
+import matplotlib.pyplot as plt
 import numpy as np
 import scipy.io as sio
-import argparse as ap
-import matplotlib.pyplot as plt
 
 
 class MarkovClusterer(object):
@@ -14,10 +15,8 @@ class MarkovClusterer(object):
         self.exponent = exponent
         self.depth = depth
         if self.format == 'txt':
-            # text
             self.matrix = np.loadtxt(input_file)
         elif self.format == 'bin':
-            # binary
             self.matrix = np.load(input_file)
         elif self.format == 'mat':
             self.matrix = sio.loadmat(input_file)
@@ -59,24 +58,21 @@ class MarkovClusterer(object):
     @staticmethod
     def get_clusterer_from_args():
         args = MarkovClusterer.parse_command_line_args()
-        return MarkovClusterer(args.format, args.input, args.epsilon, args.exponent,
-                               args.depth)
+        return MarkovClusterer(args.format, args.input, args.epsilon,
+                               args.exponent, args.depth)
 
     def mcl(self):
         i = 0
-        current = self.matrix
-        succ = self.square_matrix(current)
-        next_succ = self.inflate_matrix(succ)
-        norms = [np.linalg.norm(next_succ - current)]
-        while i < self.depth and norms[-1] > self.eps:
+        norms = []
+        current = MarkovClusterer.normalize_matrix_columns(self.matrix)
+        while i < self.depth and (i == 0 or (norms[-1] > self.eps)):
+            tmp = self.square_matrix(current)
+            succ = self.inflate_matrix(tmp)
+            norms.append(np.linalg.norm(succ - current))
             current = succ
-            succ = next_succ
-            next_succ = self.inflate_matrix(succ)
-            norms.append(np.linalg.norm(next_succ - current))
             i += 1
         return current, norms
-# TODO fix loading and saving matrix(sparse), probably csr is the best method
-# TODO to represent them [Efficient powering and multiplication]
+
 
 if __name__ == '__main__':
     clust = MarkovClusterer.get_clusterer_from_args()
