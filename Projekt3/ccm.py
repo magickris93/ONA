@@ -3,19 +3,19 @@ import argparse as ap
 import gzip as gz
 import numpy as np
 import matplotlib.pyplot as plt
-import time
+import scipy as sp
 
 class CCM(object):
 
     def __init__(self, input_file, chr_id, chr_len, seg_num, max_iter, max_eps, 
-                 submatrix_coordinates, gauss_range, scale_type, color_map, resize_factor):
+                 sub_coords, gauss_range, scale_type, color_map, resize_factor):
         self.input_file = input_file
         self.chr_id = chr_id
         self.chr_len = chr_len
         self.seg_num = seg_num
         self.max_iter = max_iter
         self.max_eps = max_eps
-        self.submatrix_coordinates = submatrix_coordinates
+        self.sub_coords = sub_coords
         self.gauss_range = gauss_range
         self.scale_type = scale_type
         self.color_map = color_map
@@ -37,7 +37,8 @@ class CCM(object):
         parser.add_argument('-me', '--max_eps', type=float, default=0.01,
                             help='Biggest error of regression')
         parser.add_argument('-sc', '--sub_coords', type=list, default=[],
-                            help='Coordinates for submatrix that should be displayed')
+                            help='Coordinates for submatrix that should be displayed. Order of coordiantes is: \
+                            left x, right x, top y, bottom y')
         parser.add_argument('-gr', '--gauss_range', type=float, default=0.0,
                             help='Range of gauss filter normalizing output matrix before display')
         parser.add_argument('-st', '--scale_type', required=True, choices=['log', 'linear'],
@@ -81,3 +82,24 @@ class CCM(object):
                     self.matrix[first_pos // self.seg_num][second_pos // self.seg_num] += 1
                     self.matrix[second_pos // self.seg_num][first_pos // self.seg_num] += 1
         
+    def get_submatrix(self):
+        try:
+            x_start, x_end, y_start, y_end = self.sub_coords
+        except:
+            raise ValueError('Invalid amount of sub_matrix coordinates')
+
+        try:
+            x_len = x_end - x_start + 1
+            y_len = y_end - y_start + 1
+            temp = np.zeros((x_len, y_len))
+            for i in range(x_len):
+                for j in range(y_len):
+                    temp[i][j] = self.matrix[x_start+i][y_start+j]
+        except:
+            raise ValueError('Invalid coordinates.')
+
+        return temp
+
+    def smoothen_matrix(self, matrix):
+        return sp.ndimage.filters.gaussian_filter(matrix, self.gauss_range)
+
