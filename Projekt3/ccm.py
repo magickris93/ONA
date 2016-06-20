@@ -103,3 +103,18 @@ class CCM(object):
     def smoothen_matrix(self, matrix):
         return sp.ndimage.filters.gaussian_filter(matrix, self.gauss_range)
 
+    @staticmethod
+    def get_avg(x, y, size, matrix):
+        total = 0
+        for i in range(size):
+            for j in range(size):
+                total += matrix[x+i][y+j]
+        return total / (size**2)
+
+    def resize_matrix(self):
+        temp = np.zeros((self.matrix.shape[0] // self.resize_factor, self.matrix.shape[0] // self.resize_factor))
+        for i in range(len(temp)):
+            for j in range(len(temp)):
+                temp[i][j] = get_avg(i*self.resize_factor, j*self.resize_factor, self.resize_factor, self.matrix)
+        return temp
+
