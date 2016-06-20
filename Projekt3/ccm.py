@@ -1,6 +1,8 @@
 #!/usr/bin/python
 import argparse as ap
-
+import gzip as gz
+import numpy as np
+import matplotlib.pyplot as plt
 
 class CCM(object):
 
@@ -48,8 +50,31 @@ class CCM(object):
     @staticmethod
     def create_ccm_from_args():
         args = CCM.parse_arguments()
-        new = CCM(args.i, args.ci, args.cl, args.sn, args.mi, args.me, args.sc, 
-                  args.gr, args.st, args.cm, args.rf)
+        new = CCM(args.input_file, args.chr_id, args.chr_len, args.seg_num, args.max_iter, args.max_eps, 
+                  args.sub_coords, args.gauss_range, args.scale_type, args.color_map, args.resize_factor)
         return new
 
-    
+    def parse_data(self):
+        if self.chr_len == 0:
+            with gz.open(self.input_file, 'r') as f:
+                max_len = 0
+                for line in f:
+                    row = line.split()
+                    first_chr, second_chr = row[0].decode(), row[2].decode()
+                    if first_chr == self.chr_id and second_chr == self.chr_id:
+                        first_pos, second_pos = int(row[1]), int(row[3])
+                        #TODO SPRAWDZIC CO JEST SZYBSZE TO CZY DWA IFY!!!
+                        max_len = max(first_pos, second_pos, max_len)
+            self.chr_len = max_len
+        
+        self.matrix = np.zeros(((self.chr_len // self.seg_num) + 1, (self.chr_len // self.seg_num) + 1))
+        
+        with gz.open(self.input_file, 'r') as f:
+            for line in f:
+                row = line.split()
+                first_chr, second_chr = row[0].decode(), row[2].decode()
+                first_pos, second_pos = int(row[1]), int(row[3])
+                if first_chr == self.chr_id and second_chr == self.chr_id:
+                    self.matrix[first_pos // self.seg_num][second_pos // self.seg_num] += 1
+                    self.matrix[second_pos // self.seg_num][first_pos // self.seg_num] += 1
+        
