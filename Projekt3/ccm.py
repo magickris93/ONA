@@ -44,3 +44,12 @@ class CCM(object):
         parser.add_argument('-rf', '--resize_factor', type=int, default=1,
                             help='How many times smaller the output matrix should be')
         return parser.parse_args()
+
+    @staticmethod
+    def create_ccm_from_args():
+        args = CCM.parse_arguments()
+        new = CCM(args.i, args.ci, args.cl, args.sn, args.mi, args.me, args.sc, 
+                  args.gr, args.st, args.cm, args.rf)
+        return new
+
+    
