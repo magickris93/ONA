@@ -3,6 +3,7 @@ import argparse as ap
 import gzip as gz
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 class CCM(object):
 
@@ -63,12 +64,14 @@ class CCM(object):
                     first_chr, second_chr = row[0].decode(), row[2].decode()
                     if first_chr == self.chr_id and second_chr == self.chr_id:
                         first_pos, second_pos = int(row[1]), int(row[3])
-                        #TODO SPRAWDZIC CO JEST SZYBSZE TO CZY DWA IFY!!!
-                        max_len = max(first_pos, second_pos, max_len)
+                        if first_pos > max_len:
+                            max_len = first_pos
+                        if second_pos > max_len:
+                            max_len = second_pos
             self.chr_len = max_len
-        
+
         self.matrix = np.zeros(((self.chr_len // self.seg_num) + 1, (self.chr_len // self.seg_num) + 1))
-        
+
         with gz.open(self.input_file, 'r') as f:
             for line in f:
                 row = line.split()
